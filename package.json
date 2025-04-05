@@ -1,6 +1,6 @@
 {
   "name": "@dookdiks/discord-bot-builder",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Modular Discord bot builder using discord.js",
   "type": "module",
   "main": "./dist/index.js",
@@ -39,7 +39,6 @@
     "discord.js": "^14.18.0"
   },
   "devDependencies": {
-    "@types/bun": "latest",
     "concurrently": "^9.1.2",
     "ts-node": "^10.9.2",
     "tsc-alias": "^1.8.13",
