@@ -1,15 +1,10 @@
-# test
+# Dookdiks Discord Bot Builder
 
-To install dependencies:
+A simple and flexible Discord bot builder for TypeScript.
 
-```bash
-bun install
-```
+## Features
 
-To run:
-
-```bash
-bun run index.ts
-```
-
-This project was created using `bun init` in bun v1.2.7. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
+- Type-safe event and command handling
+- Easy-to-use builder pattern
+- Environment variable management
+- Built on discord.js
