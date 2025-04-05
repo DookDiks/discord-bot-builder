@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "start": "bun run src/index.ts",
+    "register-command": "bun run src/registerSlashCommand.ts",
     "dev": "bun --watch src/index.ts"
   },
   "devDependencies": {
