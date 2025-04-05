@@ -1,18 +1,51 @@
 {
-  "name": "test",
-  "module": "src/index.ts",
+  "name": "@dookdiks/discord-bot-builder",
+  "version": "1.0.1",
+  "description": "Modular Discord bot builder using discord.js",
   "type": "module",
-  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "test:bot":"bun run testBot/index.ts"
+    "clean": "rm -rf dist",
+    "build": "npm run clean && tsc && tsc-alias",
+    "build:watch": "concurrently \"tsc -w\" \"tsc-alias -w\"",
+    "start": "npm run build && node dist/index.js",
+    "release": "npm run build && npm publish --access=public || echo 'version already published'"
   },
-  "devDependencies": {
-    "@types/bun": "latest"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DookDiks/discord-bot-builder.git"
   },
-  "peerDependencies": {
-    "typescript": "^5"
-  },
+  "keywords": [
+    "discord",
+    "discord.js",
+    "discord-bot",
+    "discord-bot-builder",
+    "builder"
+  ],
+  "author": "dookdiks",
+  "license": "MIT",
+  "private": false,
   "dependencies": {
     "discord.js": "^14.18.0"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "concurrently": "^9.1.2",
+    "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.13",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18"
   }
 }
