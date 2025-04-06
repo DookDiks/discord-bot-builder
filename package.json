@@ -1,6 +1,6 @@
 {
   "name": "@dookdiks/discord-bot-builder",
-  "version": "1.0.2",
+  "version": "1.0.7",
   "description": "Modular Discord bot builder using discord.js",
   "type": "module",
   "main": "./dist/index.js",
@@ -15,6 +15,7 @@
     "dist"
   ],
   "scripts": {
+    "test:bot": "tsc testBot/index.ts",
     "clean": "rm -rf dist",
     "build": "npm run clean && tsc && tsc-alias",
     "build:watch": "concurrently \"tsc -w\" \"tsc-alias -w\"",

@@ -1,9 +1,24 @@
-import { Client, GatewayIntentBits } from 'discord.js';
 import { BotBuilder } from '../src';
-import { CreateInteractionEvent, CreateMessageEvent } from '../src/events';
-import { getEnv } from './utils';
+import { CreateInteractionEvent, CreateMessageEvent } from '../src';
 
+class Env {
+    private readonly ENV_LIST = [
+        "TOKEN",
+        "CLIENT_ID",
+        "GUILD_ID"
+    ] as const;
 
+    getEnv(key: typeof this.ENV_LIST[number]) {
+        const env = process.env[key];
+        if (!env) {
+            throw new Error(`${key} is not set`);
+        }
+        return env;
+    }
+
+}
+
+const getEnv = new Env().getEnv
 
 const pingCommand = new CreateInteractionEvent()
     .command(builder =>
@@ -18,16 +33,11 @@ const messageLogger = new CreateMessageEvent().on(message => {
     }
 });
 
-const getIntents = (keys: (keyof typeof GatewayIntentBits)[]): number[] => {
-    return keys.map(k => GatewayIntentBits[k]);
-};
-
 new BotBuilder({
-    client: new Client({ intents: getIntents(["Guilds"]) }),
     token: getEnv('TOKEN'),
     clientId: getEnv('CLIENT_ID'),
-    guildId: getEnv('GUILD_ID')
+    guildId: getEnv('GUILD_ID'),
 })
     .use(pingCommand)
     .use(messageLogger)
-    .login();
+    .login().then(r => console.log(r.toString()));
