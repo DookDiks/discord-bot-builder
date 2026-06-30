@@ -1,12 +1,14 @@
 # Publishes to npm via Trusted Publishing (OIDC) — no NPM_TOKEN required.
 # Configure on npmjs.com → package → Trusted Publisher → GitHub Actions:
-#   Repository: <owner>/discord-bot-builder
+#   Repository: DookDiks/discord-bot-builder
 #   Workflow: publish.yml  (filename only, case-sensitive)
+# --provenance requires a public GitHub repository.
 name: Publish to npm
 
 on:
   release:
     types: [published]
+  workflow_dispatch:
 
 jobs:
   publish:

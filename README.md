@@ -2,6 +2,8 @@
 
 Production-ready, type-safe **builder-first** framework for Discord bots on Node.js and discord.js v14. Every part of the stack — config, logging, database, commands, components, middleware, and plugins — has a fluent builder API designed to be simpler than wiring discord.js directly.
 
+**Repository:** [github.com/DookDiks/discord-bot-builder](https://github.com/DookDiks/discord-bot-builder)
+
 ## Installation
 
 ```bash
@@ -334,7 +336,7 @@ await bot.stop();           // graceful shutdown (SIGINT/SIGTERM handled by defa
 ```bash
 npm run build       # Compile ESM + CJS + types
 npm run typecheck   # Typecheck src + examples
-npm test            # Run 148 unit tests
+npm test            # Run 152 unit tests
 npm run dev         # Watch mode
 ```
 

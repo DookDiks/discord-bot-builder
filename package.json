@@ -42,6 +42,14 @@
     "oop"
   ],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DookDiks/discord-bot-builder.git"
+  },
+  "bugs": {
+    "url": "https://github.com/DookDiks/discord-bot-builder/issues"
+  },
+  "homepage": "https://github.com/DookDiks/discord-bot-builder#readme",
   "peerDependencies": {
     "discord.js": "^14.0.0"
   },
