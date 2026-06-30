@@ -7,7 +7,7 @@ Buttons, select menus, and modals extend your bot beyond slash commands.
 ### Sending buttons
 
 ```ts
-import { ButtonRowBuilder } from "discord-bot-builder";
+import { ButtonRowBuilder } from "@svacmai/discord-bot-builder";
 
 const row = new ButtonRowBuilder()
   .primary("vote:yes", "Yes")
@@ -57,7 +57,7 @@ ctx.deferUpdate() // Acknowledge without visual change
 ### Sending a select menu
 
 ```ts
-import { SelectMenuRowBuilder } from "discord-bot-builder";
+import { SelectMenuRowBuilder } from "@svacmai/discord-bot-builder";
 
 const row = new SelectMenuRowBuilder("game-select")
   .setPlaceholder("Choose a game")
@@ -88,7 +88,7 @@ builder.selectMenu({
 ### Showing a modal
 
 ```ts
-import { ModalFormBuilder, TextInputStyle } from "discord-bot-builder";
+import { ModalFormBuilder, TextInputStyle } from "@svacmai/discord-bot-builder";
 
 // In a button handler:
 const modal = new ModalFormBuilder("feedback-form", "Send Feedback")
@@ -115,7 +115,7 @@ builder.modal({
 ## Pagination
 
 ```ts
-import { sendPaginator } from "discord-bot-builder";
+import { sendPaginator } from "@svacmai/discord-bot-builder";
 
 await sendPaginator(ctx.interaction.message!, {
   pages: [

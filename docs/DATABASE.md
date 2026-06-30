@@ -9,7 +9,7 @@ All database access goes through `DatabaseAdapter<TClient>`. Handlers access it 
 ### MemoryAdapter (development)
 
 ```ts
-import { MemoryAdapter } from "discord-bot-builder";
+import { MemoryAdapter } from "@svacmai/discord-bot-builder";
 
 const db = new MemoryAdapter();
 await db.connect();
@@ -26,7 +26,7 @@ Data is lost on restart. Use for tests and prototyping only.
 ### FileAdapter (small production bots)
 
 ```ts
-import { FileAdapter } from "discord-bot-builder";
+import { FileAdapter } from "@svacmai/discord-bot-builder";
 
 const db = new FileAdapter("./data/store.json");
 // Same API as MemoryAdapter — auto-persists to JSON on every write
@@ -40,7 +40,7 @@ Suitable for bots with low write volume. For high traffic, use a real database.
 
 ```ts
 import { PrismaClient } from "@prisma/client";
-import { createAdapter } from "discord-bot-builder";
+import { createAdapter } from "@svacmai/discord-bot-builder";
 
 const prisma = new PrismaClient();
 
@@ -58,7 +58,7 @@ const count = await client.user.count();
 
 ```ts
 import { drizzle } from "drizzle-orm/node-postgres";
-import { createAdapter } from "discord-bot-builder";
+import { createAdapter } from "@svacmai/discord-bot-builder";
 
 const orm = drizzle(pool);
 const db = createAdapter(orm, {
@@ -72,7 +72,7 @@ const db = createAdapter(orm, {
 Extend an adapter for domain-specific methods:
 
 ```ts
-import { MemoryAdapter } from "discord-bot-builder";
+import { MemoryAdapter } from "@svacmai/discord-bot-builder";
 
 interface UserData {
   points: number;
@@ -113,7 +113,7 @@ The adapter is connected before command deployment and login.
 Database errors throw `DatabaseError`:
 
 ```ts
-import { DatabaseError } from "discord-bot-builder";
+import { DatabaseError } from "@svacmai/discord-bot-builder";
 
 try {
   await ctx.services.db.connect();

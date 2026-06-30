@@ -1,11 +1,9 @@
 import {
   BotBuilder,
   CommandBuilder,
-  MemoryAdapter,
-  createAdapter,
-  errorHandlerMiddleware,
-  loggerMiddleware,
-} from "discord-bot-builder";
+  DatabaseBuilder,
+  MiddlewareBuilder,
+} from "@svacmai/discord-bot-builder";
 
 const ping = new CommandBuilder("ping", "Check if the bot is alive")
   .cooldown(3)
@@ -24,13 +22,12 @@ const greet = new CommandBuilder("greet", "Greet a user")
     await ctx.reply({ content: text });
   });
 
-const bot = await new BotBuilder()
+const bot = await BotBuilder.create()
   .token(process.env.DISCORD_TOKEN!)
   .clientId(process.env.CLIENT_ID!)
   .guildId(process.env.GUILD_ID)
-  .database(new MemoryAdapter())
-  .use(loggerMiddleware())
-  .use(errorHandlerMiddleware())
+  .database(DatabaseBuilder.memory())
+  .middleware(MiddlewareBuilder.defaults())
   .commands([ping, greet])
   .onReady(async (ctx) => {
     ctx.services.logger.info(`Logged in as ${ctx.client.user?.tag}`);

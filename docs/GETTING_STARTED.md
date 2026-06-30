@@ -16,7 +16,7 @@ This guide walks you through creating your first bot with `discord-bot-builder`.
 ```bash
 mkdir my-discord-bot && cd my-discord-bot
 npm init -y
-npm install discord-bot-builder discord.js
+npm install @svacmai/discord-bot-builder discord.js
 npm install -D typescript @types/node tsx
 ```
 
@@ -53,7 +53,7 @@ import {
   CommandBuilder,
   MemoryAdapter,
   errorHandlerMiddleware,
-} from "discord-bot-builder";
+} from "@svacmai/discord-bot-builder";
 
 const ping = new CommandBuilder("ping", "Health check")
   .execute(async (ctx) => {
@@ -115,7 +115,7 @@ npx prisma init
 
 ```ts
 import { PrismaClient } from "@prisma/client";
-import { createAdapter } from "discord-bot-builder";
+import { createAdapter } from "@svacmai/discord-bot-builder";
 
 const prisma = new PrismaClient();
 const db = createAdapter(prisma, {

@@ -82,3 +82,5 @@ export function deferMiddleware<TDatabase>(ephemeral = false): MiddlewareFn<TDat
     await next();
   };
 }
+
+export { MiddlewareBuilder } from "./MiddlewareBuilder.js";

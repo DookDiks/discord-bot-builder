@@ -1,7 +1,10 @@
 {
-  "name": "discord-bot-builder",
-  "version": "1.0.0",
-  "description": "Type-safe OOP Discord bot builder with database integration, commands, events, and middleware",
+  "name": "@svacmai/discord-bot-builder",
+  "publishConfig": {
+    "access": "public"
+  },
+  "version": "2.0.0",
+  "description": "Builder-first TypeScript framework for Discord bots — fluent APIs for commands, components, config, database, middleware, and more",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -25,7 +28,7 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.examples.json",
     "test": "vitest run",
     "test:watch": "vitest",
     "prepublishOnly": "npm run build && npm run test"

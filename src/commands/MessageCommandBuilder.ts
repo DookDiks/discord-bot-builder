@@ -1,5 +1,8 @@
-import type { MessageCommandDefinition } from "../types/index.js";
+import type { MessageCommandDefinition, PermissionConfig } from "../types/index.js";
 import type { MessageContext } from "../types/index.js";
+import type { CooldownConfig } from "../types/index.js";
+import type { Buildable } from "../utils/buildable.js";
+import { resolveBuildable } from "../utils/buildable.js";
 
 /**
  * Fluent builder for prefix (message) commands.
@@ -26,6 +29,21 @@ export class MessageCommandBuilder<TDatabase = unknown> {
 
   cooldown(seconds: number, scope: "user" | "guild" | "channel" = "user"): this {
     this.definition.cooldown = { seconds, scope };
+    return this;
+  }
+
+  cooldownConfig(config: Buildable<CooldownConfig>): this {
+    this.definition.cooldown = resolveBuildable(config);
+    return this;
+  }
+
+  permissions(config: Buildable<PermissionConfig>): this {
+    this.definition.permissions = resolveBuildable(config);
+    return this;
+  }
+
+  guildOnly(): this {
+    this.definition.guildOnly = true;
     return this;
   }
 

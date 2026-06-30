@@ -7,6 +7,8 @@ import type {
   PermissionConfig,
 } from "../types/index.js";
 import type { AutocompleteContext, CommandContext } from "../types/index.js";
+import type { Buildable } from "../utils/buildable.js";
+import { resolveBuildable } from "../utils/buildable.js";
 
 /**
  * Fluent builder for slash commands.
@@ -72,6 +74,11 @@ export class CommandBuilder<TDatabase = unknown> {
     return this;
   }
 
+  addMentionableOption(name: string, description: string, opts?: { required?: boolean }): this {
+    this.definition.options!.push({ name, description, type: "mentionable", required: opts?.required ?? false });
+    return this;
+  }
+
   addAttachmentOption(name: string, description: string, opts?: { required?: boolean }): this {
     this.definition.options!.push({ name, description, type: "attachment", required: opts?.required ?? false });
     return this;
@@ -87,8 +94,13 @@ export class CommandBuilder<TDatabase = unknown> {
     return this;
   }
 
-  permissions(config: PermissionConfig): this {
-    this.definition.permissions = config;
+  cooldownConfig(config: Buildable<CooldownConfig>): this {
+    this.definition.cooldown = resolveBuildable(config);
+    return this;
+  }
+
+  permissions(config: Buildable<PermissionConfig>): this {
+    this.definition.permissions = resolveBuildable(config);
     return this;
   }
 
@@ -97,7 +109,7 @@ export class CommandBuilder<TDatabase = unknown> {
   defer(ephemeral = false): this { this.definition.defer = true; this.definition.ephemeral = ephemeral; return this; }
   ephemeral(): this { this.definition.ephemeral = true; return this; }
 
-  autocomplete(handler: (ctx: AutocompleteContext<TDatabase>) => Promise<ApplicationCommandOptionChoiceData[]>): this {
+  autocomplete(handler: (ctx: AutocompleteContext<TDatabase>) => Promise<ApplicationCommandOptionChoiceData[] | void>): this {
     this.definition.autocomplete = handler;
     return this;
   }

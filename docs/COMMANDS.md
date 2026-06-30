@@ -3,7 +3,7 @@
 ## Slash commands
 
 ```ts
-import { CommandBuilder, PermissionFlagsBits } from "discord-bot-builder";
+import { CommandBuilder, PermissionFlagsBits } from "@svacmai/discord-bot-builder";
 
 const ban = new CommandBuilder("ban", "Ban a member")
   .addUserOption("user", "Member to ban", { required: true })
@@ -49,7 +49,7 @@ const ban = new CommandBuilder("ban", "Ban a member")
 ## Subcommands
 
 ```ts
-import { CommandGroupBuilder } from "discord-bot-builder";
+import { CommandGroupBuilder } from "@svacmai/discord-bot-builder";
 
 const economy = new CommandGroupBuilder("eco", "Economy system")
   .subcommand("balance", "Check balance", (b) =>
@@ -99,7 +99,7 @@ const play = new CommandBuilder("play", "Play a track")
 ### User context menu (right-click user)
 
 ```ts
-import { UserContextMenuBuilder } from "discord-bot-builder";
+import { UserContextMenuBuilder } from "@svacmai/discord-bot-builder";
 
 const avatar = new UserContextMenuBuilder("Show Avatar")
   .execute(async (ctx) => {
@@ -114,7 +114,7 @@ builder.userContextMenu(avatar);
 ### Message context menu (right-click message)
 
 ```ts
-import { MessageContextMenuBuilder } from "discord-bot-builder";
+import { MessageContextMenuBuilder } from "@svacmai/discord-bot-builder";
 
 const pin = new MessageContextMenuBuilder("Quick Pin")
   .permissions({ memberPermissions: [PermissionFlagsBits.ManageMessages] })
@@ -127,7 +127,7 @@ const pin = new MessageContextMenuBuilder("Quick Pin")
 ## Prefix commands
 
 ```ts
-import { MessageCommandBuilder } from "discord-bot-builder";
+import { MessageCommandBuilder } from "@svacmai/discord-bot-builder";
 
 const help = new MessageCommandBuilder("help", "Show commands")
   .aliases("h", "commands")

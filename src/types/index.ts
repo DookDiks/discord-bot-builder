@@ -207,7 +207,7 @@ export interface CommandDefinition<TDatabase = unknown> {
   ephemeral?: boolean;
   autocomplete?: (
     ctx: AutocompleteContext<TDatabase>,
-  ) => Promise<ApplicationCommandOptionChoiceData[]>;
+  ) => Promise<ApplicationCommandOptionChoiceData[] | void>;
   execute: (ctx: CommandContext<TDatabase>) => Promise<void>;
 }
 

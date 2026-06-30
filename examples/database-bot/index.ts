@@ -2,10 +2,7 @@ import {
   BotBuilder,
   CommandBuilder,
   MemoryAdapter,
-  type DatabaseAdapter,
-} from "discord-bot-builder";
-
-// ─── Custom database adapter (wrap Prisma, Drizzle, etc.) ───
+} from "@svacmai/discord-bot-builder";
 
 interface UserProfile {
   points: number;
@@ -31,9 +28,7 @@ class ProfileStore extends MemoryAdapter {
   }
 }
 
-// ─── Commands that use the database ───
-
-const profile = new CommandBuilder<ProfileStore>("profile", "View your profile")
+const profile = new CommandBuilder("profile", "View your profile")
   .execute(async (ctx) => {
     const store = ctx.services.db as ProfileStore;
     const data = store.getProfile(ctx.user.id);
@@ -46,7 +41,7 @@ const profile = new CommandBuilder<ProfileStore>("profile", "View your profile")
     });
   });
 
-const addPoints = new CommandBuilder<ProfileStore>("addpoints", "Add points (admin)")
+const addPoints = new CommandBuilder("addpoints", "Add points (admin)")
   .addIntegerOption("amount", "Points to add", { required: true, minValue: 1 })
   .addUserOption("user", "Target user", { required: false })
   .execute(async (ctx) => {
@@ -63,18 +58,9 @@ const addPoints = new CommandBuilder<ProfileStore>("addpoints", "Add points (adm
     });
   });
 
-// ─── Prisma example (commented) ───
-//
-// import { PrismaClient } from "@prisma/client";
-// const prisma = new PrismaClient();
-// const db = createAdapter(prisma, {
-//   connect: () => prisma.$connect(),
-//   disconnect: () => prisma.$disconnect(),
-// });
+const db = new ProfileStore();
 
-const db: DatabaseAdapter<ProfileStore> = new ProfileStore();
-
-const bot = await new BotBuilder<ProfileStore>()
+const bot = await BotBuilder.create()
   .token(process.env.DISCORD_TOKEN!)
   .clientId(process.env.CLIENT_ID!)
   .guildId(process.env.GUILD_ID)

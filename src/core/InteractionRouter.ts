@@ -103,12 +103,25 @@ export class InteractionRouter<TDatabase = unknown> {
     if (!resolved) return;
 
     const { command, subcommand, subcommandGroup } = resolved;
-    const handler = subcommand ?? command;
+    const subName = interaction.options.getSubcommand(false);
     const ctx = this.createCommandContext(interaction, subcommandGroup);
 
-    if (!this.checkLocation(interaction, handler, ctx)) return;
-    if (!await this.checkPermissions(interaction, handler, command.name, ctx)) return;
-    if (!await this.checkCooldown(interaction, handler, command.name, ctx)) return;
+    if (command.subcommands?.length) {
+      if (!subName) {
+        await this.safeReply(ctx, "Please specify a subcommand.", true);
+        return;
+      }
+      if (!subcommand) {
+        await this.safeReply(ctx, "Unknown subcommand.", true);
+        return;
+      }
+    }
+
+    const handler = subcommand ?? command;
+
+    if (!(await this.checkLocation(interaction, handler, ctx))) return;
+    if (!(await this.checkPermissions(interaction, handler, command.name, ctx))) return;
+    if (!(await this.checkCooldown(interaction, handler, command.name, ctx))) return;
 
     const middleware = [
       ...this.options.globalMiddleware,
@@ -116,14 +129,14 @@ export class InteractionRouter<TDatabase = unknown> {
       ...(subcommand?.middleware ?? []),
     ];
 
-    if (handler.defer && !interaction.deferred && !interaction.replied) {
-      await interaction.deferReply({ ephemeral: handler.ephemeral ?? false });
-    }
-
     const { halted, reason } = await runMiddleware(middleware, ctx);
     if (halted) {
       if (reason) await this.safeReply(ctx, reason, handler.ephemeral ?? true);
       return;
+    }
+
+    if (handler.defer && !interaction.deferred && !interaction.replied) {
+      await interaction.deferReply({ ephemeral: handler.ephemeral ?? false });
     }
 
     await handler.execute(ctx);
@@ -237,59 +250,80 @@ export class InteractionRouter<TDatabase = unknown> {
   }
 
   private async handleMessageCommand(message: Message, prefix: string): Promise<void> {
-    const args = message.content.slice(prefix.length).trim().split(/\s+/);
-    const name = args.shift()?.toLowerCase();
-    if (!name) return;
+    try {
+      const args = message.content.slice(prefix.length).trim().split(/\s+/);
+      const name = args.shift()?.toLowerCase();
+      if (!name) return;
 
-    const def = this.options.messageCommands.get(name);
-    if (!def) return;
+      const def = this.options.messageCommands.get(name);
+      if (!def) return;
 
-    if (def.guildOnly && !message.guild) {
-      await message.reply("This command can only be used in a server.");
-      return;
-    }
-
-    const ctx: MessageContext<TDatabase> = {
-      message,
-      user: message.author,
-      member: message.member,
-      args,
-      services: this.options.services,
-      reply: message.reply.bind(message),
-    };
-
-    if (def.permissions) {
-      const check = checkPermissions(ctx.member, { ...def.permissions, ownerIds: [...(def.permissions.ownerIds ?? []), ...this.options.ownerIds] }, ctx.user.id);
-      if (!check.allowed) {
-        await ctx.reply(check.reason ?? "Permission denied.");
+      if (def.guildOnly && !message.guild) {
+        await message.reply("This command can only be used in a server.");
         return;
       }
-    }
 
-    if (def.cooldown) {
-      const scopeId = message.author.id;
-      const cd = this.cooldowns.isOnCooldown(def.name, scopeId, def.cooldown);
-      if (cd.onCooldown) {
-        await ctx.reply(`Please wait ${cd.remainingSeconds}s before using this command again.`);
-        return;
+      const ctx: MessageContext<TDatabase> = {
+        message,
+        user: message.author,
+        member: message.member,
+        args,
+        services: this.options.services,
+        reply: message.reply.bind(message),
+      };
+
+      if (def.permissions) {
+        const check = checkPermissions(ctx.member, { ...def.permissions, ownerIds: [...(def.permissions.ownerIds ?? []), ...this.options.ownerIds] }, ctx.user.id);
+        if (!check.allowed) {
+          await ctx.reply(check.reason ?? "Permission denied.");
+          return;
+        }
       }
-      this.cooldowns.setCooldown(def.name, scopeId, def.cooldown);
-    }
 
-    await def.execute(ctx);
+      if (def.cooldown) {
+        const scopeId = this.messageCooldownScopeId(message, def.cooldown.scope);
+        const cd = this.cooldowns.isOnCooldown(def.name, scopeId, def.cooldown);
+        if (cd.onCooldown) {
+          await ctx.reply(`Please wait ${cd.remainingSeconds}s before using this command again.`);
+          return;
+        }
+      }
+
+      await def.execute(ctx);
+
+      if (def.cooldown) {
+        const scopeId = this.messageCooldownScopeId(message, def.cooldown.scope);
+        this.cooldowns.setCooldown(def.name, scopeId, def.cooldown);
+      }
+    } catch (err) {
+      this.options.logger.error("Message command error", {
+        err: err instanceof Error ? err.message : String(err),
+      });
+    }
   }
 
-  private checkLocation(
+  private messageCooldownScopeId(
+    message: Message,
+    scope: import("../types/index.js").CooldownConfig["scope"] = "user",
+  ): string {
+    switch (scope) {
+      case "guild": return message.guildId ?? "dm";
+      case "channel": return message.channelId;
+      default: return message.author.id;
+    }
+  }
+
+  private async checkLocation(
     interaction: ChatInputCommandInteraction,
     handler: CommandDefinition<TDatabase> | SubcommandDefinition<TDatabase>,
     ctx: CommandContext<TDatabase>,
-  ): boolean {
+  ): Promise<boolean> {
     if (handler.guildOnly && !interaction.guild) {
-      void this.safeReply(ctx, "This command can only be used in a server.", true);
+      await this.safeReply(ctx, "This command can only be used in a server.", true);
       return false;
     }
     if (handler.dmOnly && interaction.guild) {
-      void this.safeReply(ctx, "This command can only be used in DMs.", true);
+      await this.safeReply(ctx, "This command can only be used in DMs.", true);
       return false;
     }
     return true;

@@ -3,25 +3,20 @@ import {
   CommandBuilder,
   CommandGroupBuilder,
   UserContextMenuBuilder,
+  ButtonHandlerBuilder,
   ButtonRowBuilder,
-  ModalFormBuilder,
   EmbedBuilder,
-  FileAdapter,
+  ConfigBuilder,
+  DatabaseBuilder,
+  LoggerBuilder,
+  MiddlewareBuilder,
   IntentBuilder,
-  loadConfigFromEnv,
-  loggerMiddleware,
-  errorHandlerMiddleware,
-  deferMiddleware,
-  TextInputStyle,
-} from "discord-bot-builder";
+} from "@svacmai/discord-bot-builder";
 
-// ─── Load validated config from environment ───
-const config = loadConfigFromEnv();
+const config = ConfigBuilder.fromEnv().build();
 
-// ─── Slash commands ───
 const ping = new CommandBuilder("ping", "Health check")
   .execute(async (ctx) => {
-    const health = (ctx.services as unknown as { health?: () => { uptime: number } });
     await ctx.reply({
       embeds: [EmbedBuilder.success("Pong!", `Latency: ${Date.now() % 100}ms`).build()],
       ephemeral: true,
@@ -42,7 +37,6 @@ const search = new CommandBuilder("search", "Search with autocomplete")
     await ctx.reply({ content: `Results for: ${ctx.options.query}` });
   });
 
-// ─── Subcommand group ───
 const moderation = new CommandGroupBuilder("mod", "Moderation tools")
   .guildOnly()
   .subcommand("warn", "Warn a user", (b) =>
@@ -60,7 +54,6 @@ const moderation = new CommandGroupBuilder("mod", "Moderation tools")
      }),
   );
 
-// ─── Components ───
 const confirmRow = new ButtonRowBuilder()
   .danger("confirm:delete", "Confirm Delete")
   .secondary("confirm:cancel", "Cancel")
@@ -71,7 +64,6 @@ const settings = new CommandBuilder("settings", "Bot settings panel")
     await ctx.reply({ content: "Choose an action:", components: [confirmRow] });
   });
 
-// ─── Context menu ───
 const profile = new UserContextMenuBuilder("View Profile")
   .execute(async (ctx) => {
     await ctx.reply({
@@ -80,20 +72,23 @@ const profile = new UserContextMenuBuilder("View Profile")
     });
   });
 
-// ─── Build production bot ───
-const bot = await new BotBuilder()
-  .configure(config)
-  .database(new FileAdapter("./data/bot-store.json"))
-  .intents(IntentBuilder.default().members().moderation())
-  .use(loggerMiddleware())
-  .use(errorHandlerMiddleware())
-  .commands([ping, search, moderation, settings])
-  .userContextMenu(profile)
-  .button({ customId: "confirm", prefix: true, execute: async (ctx) => {
+const confirmButton = ButtonHandlerBuilder.create("confirm")
+  .prefix()
+  .execute(async (ctx) => {
     const action = ctx.customId.split(":")[1];
     if (action === "delete") await ctx.update({ content: "Deleted!", components: [] });
     else await ctx.update({ content: "Cancelled.", components: [] });
-  }})
+  });
+
+const bot = await BotBuilder.create()
+  .configure(config)
+  .logging(LoggerBuilder.production("production-bot"))
+  .database(DatabaseBuilder.create().file("./data/bot-store.json"))
+  .intents(IntentBuilder.default().members().moderation())
+  .middleware(MiddlewareBuilder.defaults())
+  .commands([ping, search, moderation, settings])
+  .userContextMenu(profile)
+  .button(confirmButton)
   .onReady(async (ctx) => {
     ctx.services.logger.info(`Production bot ready: ${ctx.client.user?.tag}`);
   })

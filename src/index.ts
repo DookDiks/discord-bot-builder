@@ -26,20 +26,38 @@ export {
   ButtonRowBuilder,
   SelectMenuRowBuilder,
   ModalFormBuilder,
+  ButtonHandlerBuilder,
+  SelectMenuHandlerBuilder,
+  ModalHandlerBuilder,
   ButtonStyle,
   TextInputStyle,
 } from "./components/index.js";
 
 // Database
-export { DatabaseAdapter, MemoryAdapter, FileAdapter, createAdapter } from "./database/index.js";
+export {
+  DatabaseAdapter,
+  MemoryAdapter,
+  FileAdapter,
+  createAdapter,
+  DatabaseBuilder,
+} from "./database/index.js";
 
 // Config
-export { botConfigSchema, loadConfigFromEnv, validateConfig } from "./config/index.js";
+export {
+  botConfigSchema,
+  loadConfigFromEnv,
+  validateConfig,
+  ConfigBuilder,
+} from "./config/index.js";
 export type { ValidatedBotConfig } from "./config/index.js";
 
 // Logging
 export { Logger, defaultLogger } from "./logging/Logger.js";
+export { LoggerBuilder } from "./logging/LoggerBuilder.js";
 export type { LogLevel, LoggerOptions } from "./logging/Logger.js";
+
+// Plugins
+export { PluginBuilder } from "./plugins/index.js";
 
 // Errors
 export {
@@ -59,14 +77,18 @@ export {
   errorHandlerMiddleware,
   ownerOnlyMiddleware,
   deferMiddleware,
+  MiddlewareBuilder,
 } from "./middleware/index.js";
 
 // Utilities
 export { IntentBuilder } from "./utils/intents.js";
 export { EmbedBuilder } from "./utils/embeds.js";
 export { sendPaginator } from "./utils/pagination.js";
-export { checkPermissions } from "./utils/permissions.js";
+export { PaginatorBuilder } from "./utils/PaginatorBuilder.js";
+export { checkPermissions, PermissionBuilder } from "./utils/permissions.js";
 export { CooldownManager } from "./utils/CooldownManager.js";
+export { CooldownBuilder } from "./utils/CooldownBuilder.js";
+export { resolveBuildable, type Buildable } from "./utils/buildable.js";
 
 // Types
 export type {

@@ -198,9 +198,17 @@ export class CommandRegistry<TDatabase = unknown> {
 
     if (options.guildId) {
       await rest.put(Routes.applicationGuildCommands(clientId, options.guildId), { body });
-    } else if (options.global) {
-      await rest.put(Routes.applicationCommands(clientId), { body });
+      return;
     }
+
+    if (options.global) {
+      await rest.put(Routes.applicationCommands(clientId), { body });
+      return;
+    }
+
+    throw new Error(
+      "Command deploy requires guildId or global:true. Set .guildId() for dev or .registerCommandsGlobally(true) for production.",
+    );
   }
 
   /** Deploy without starting the bot — useful for CI/CD pipelines. */
