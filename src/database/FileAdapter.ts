@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, existsSync, renameSync, unlinkSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { DatabaseAdapter } from "./DatabaseAdapter.js";
 import { DatabaseError } from "../errors/index.js";
@@ -14,6 +14,7 @@ interface FileStore {
 export class FileAdapter extends DatabaseAdapter<FileStore> {
   private readonly filePath: string;
   private data: FileStore = {};
+  private writeChain: Promise<void> = Promise.resolve();
 
   constructor(filePath: string) {
     super();
@@ -44,26 +45,22 @@ export class FileAdapter extends DatabaseAdapter<FileStore> {
   }
 
   async flush(): Promise<void> {
-    try {
-      writeFileSync(this.filePath, JSON.stringify(this.data, null, 2), "utf-8");
-    } catch (err) {
-      throw new DatabaseError(`Failed to write database file: ${this.filePath}`, err);
-    }
+    await this.queueWrite(() => this.writeToDisk());
   }
 
   get<T>(key: string): T | undefined {
     return this.getClient()[key] as T | undefined;
   }
 
-  set<T>(key: string, value: T): void {
+  async set<T>(key: string, value: T): Promise<void> {
     this.getClient()[key] = value;
-    void this.flush();
+    await this.queueWrite(() => this.writeToDisk());
   }
 
-  delete(key: string): boolean {
+  async delete(key: string): Promise<boolean> {
     const existed = key in this.getClient();
     delete this.getClient()[key];
-    void this.flush();
+    await this.queueWrite(() => this.writeToDisk());
     return existed;
   }
 
@@ -75,5 +72,28 @@ export class FileAdapter extends DatabaseAdapter<FileStore> {
     const all = Object.keys(this.getClient());
     if (!prefix) return all;
     return all.filter((k) => k.startsWith(prefix));
+  }
+
+  private async queueWrite(write: () => void): Promise<void> {
+    const task = this.writeChain.then(write);
+    this.writeChain = task.catch(() => undefined);
+    await task;
+  }
+
+  private writeToDisk(): void {
+    const tmpPath = `${this.filePath}.tmp`;
+    try {
+      writeFileSync(tmpPath, JSON.stringify(this.data, null, 2), "utf-8");
+      renameSync(tmpPath, this.filePath);
+    } catch (err) {
+      if (existsSync(tmpPath)) {
+        try {
+          unlinkSync(tmpPath);
+        } catch {
+          // best-effort cleanup
+        }
+      }
+      throw new DatabaseError(`Failed to write database file: ${this.filePath}`, err);
+    }
   }
 }

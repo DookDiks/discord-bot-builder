@@ -53,4 +53,18 @@ describe("Logger", () => {
     parent.child("router").info("routed");
     expect(logSpy).toHaveBeenCalledWith("[INFO] [bot:router] routed");
   });
+
+  it("redacts sensitive keys in meta", () => {
+    const logger = new Logger({ level: "info", timestamp: false });
+    logger.info("config loaded", {
+      token: "secret-bot-token",
+      nested: { password: "hunter2", ok: true },
+      apiKey: "abc123",
+    });
+    expect(logSpy).toHaveBeenCalledWith("[INFO] [discord-bot-builder] config loaded", {
+      token: "[REDACTED]",
+      nested: { password: "[REDACTED]", ok: true },
+      apiKey: "[REDACTED]",
+    });
+  });
 });

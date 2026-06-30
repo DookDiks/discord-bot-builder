@@ -79,7 +79,29 @@ export class InteractionRouter<TDatabase = unknown> {
         type: interaction.type,
         err: err instanceof Error ? err.message : String(err),
       });
+      await this.safeErrorReply(interaction);
     }
+  }
+
+  private async safeErrorReply(interaction: import("discord.js").Interaction): Promise<void> {
+    if (!this.isRepliable(interaction)) return;
+
+    const content = "Something went wrong.";
+    try {
+      if (interaction.replied || interaction.deferred) {
+        await interaction.editReply({ content });
+      } else {
+        await interaction.reply({ content, ephemeral: true });
+      }
+    } catch {
+      // Interaction may have expired or already been acknowledged.
+    }
+  }
+
+  private isRepliable(
+    interaction: import("discord.js").Interaction,
+  ): interaction is import("discord.js").RepliableInteraction {
+    return "reply" in interaction && typeof interaction.reply === "function";
   }
 
   private async handleAutocomplete(interaction: AutocompleteInteraction): Promise<void> {

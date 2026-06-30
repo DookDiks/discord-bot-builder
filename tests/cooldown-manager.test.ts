@@ -10,6 +10,7 @@ describe("CooldownManager", () => {
   });
 
   afterEach(() => {
+    manager.destroy();
     vi.useRealTimers();
   });
 
@@ -70,5 +71,13 @@ describe("CooldownManager", () => {
     vi.advanceTimersByTime(500);
     manager.setCooldown("ping", "user1", { seconds: 60 });
     expect(manager.isOnCooldown("ping", "user1", { seconds: 60 }).onCooldown).toBe(true);
+  });
+
+  it("purges expired entries on periodic sweep without re-query", () => {
+    const sweeping = new CooldownManager(1_000);
+    sweeping.setCooldown("once", "user1", { seconds: 1 });
+    vi.advanceTimersByTime(2_500);
+    expect(sweeping.isOnCooldown("once", "user1", { seconds: 1 })).toEqual({ onCooldown: false });
+    sweeping.destroy();
   });
 });

@@ -7,6 +7,9 @@ const LEVEL_PRIORITY: Record<LogLevel, number> = {
   error: 3,
 };
 
+const REDACT_KEY_PATTERN = /^(token|authorization|secret|password|api[_-]?key)$/i;
+const REDACTED = "[REDACTED]";
+
 export interface LoggerOptions {
   level?: LogLevel;
   prefix?: string;
@@ -66,12 +69,26 @@ export class Logger {
 
     const line = parts.join(" ");
     const fn = level === "error" ? console.error : level === "warn" ? console.warn : console.log;
-    if (meta && Object.keys(meta).length > 0) {
-      fn(line, meta);
+    const safeMeta = meta ? (redactMeta(meta) as Record<string, unknown>) : undefined;
+    if (safeMeta && Object.keys(safeMeta).length > 0) {
+      fn(line, safeMeta);
     } else {
       fn(line);
     }
   }
+}
+
+function redactMeta(value: unknown): unknown {
+  if (value === null || value === undefined) return value;
+  if (Array.isArray(value)) return value.map(redactMeta);
+  if (typeof value === "object") {
+    const result: Record<string, unknown> = {};
+    for (const [key, nested] of Object.entries(value as Record<string, unknown>)) {
+      result[key] = REDACT_KEY_PATTERN.test(key) ? REDACTED : redactMeta(nested);
+    }
+    return result;
+  }
+  return value;
 }
 
 export const defaultLogger = new Logger();

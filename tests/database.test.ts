@@ -83,7 +83,7 @@ describe("FileAdapter", () => {
   it("persists data to disk across connections", async () => {
     const adapter = new FileAdapter(testFile);
     await adapter.connect();
-    adapter.set("persist", "value");
+    await adapter.set("persist", "value");
     await adapter.disconnect();
 
     const adapter2 = new FileAdapter(testFile);
@@ -102,8 +102,8 @@ describe("FileAdapter", () => {
   it("delete removes key and persists", async () => {
     const adapter = new FileAdapter(testFile);
     await adapter.connect();
-    adapter.set("temp", 1);
-    expect(adapter.delete("temp")).toBe(true);
+    await adapter.set("temp", 1);
+    expect(await adapter.delete("temp")).toBe(true);
     await adapter.disconnect();
 
     const adapter2 = new FileAdapter(testFile);
@@ -115,9 +115,9 @@ describe("FileAdapter", () => {
   it("keys filters by prefix", async () => {
     const adapter = new FileAdapter(testFile);
     await adapter.connect();
-    adapter.set("a:1", 1);
-    adapter.set("a:2", 2);
-    adapter.set("b:1", 3);
+    await adapter.set("a:1", 1);
+    await adapter.set("a:2", 2);
+    await adapter.set("b:1", 3);
     expect(adapter.keys("a:").sort()).toEqual(["a:1", "a:2"]);
     await adapter.disconnect();
   });

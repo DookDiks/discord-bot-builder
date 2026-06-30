@@ -182,6 +182,55 @@ describe("InteractionRouter slash commands", () => {
       expect.objectContaining({ content: "Please specify a subcommand." }),
     );
   });
+
+  it("replies with error when handler throws before reply", async () => {
+    const registry = new CommandRegistry();
+    registry.register(
+      new CommandBuilder("boom", "Boom")
+        .execute(async () => {
+          throw new Error("handler failed");
+        })
+        .build(),
+    );
+
+    const { router, logger } = createRouter({ commands: registry });
+    const reply = vi.fn();
+    await dispatchInteraction(router, makeSlashInteraction("boom", { reply }));
+
+    expect(logger.error).toHaveBeenCalled();
+    expect(reply).toHaveBeenCalledWith(
+      expect.objectContaining({ content: "Something went wrong.", ephemeral: true }),
+    );
+  });
+
+  it("editReplies with error when handler throws after defer", async () => {
+    const registry = new CommandRegistry();
+    registry.register(
+      new CommandBuilder("boom", "Boom")
+        .defer()
+        .execute(async () => {
+          throw new Error("handler failed");
+        })
+        .build(),
+    );
+
+    const { router } = createRouter({ commands: registry });
+    const editReply = vi.fn().mockResolvedValue(undefined);
+    const interaction = makeSlashInteraction("boom", {
+      deferred: false,
+      replied: false,
+      editReply,
+      deferReply: vi.fn().mockImplementation(async () => {
+        interaction.deferred = true;
+      }),
+    });
+    await dispatchInteraction(router, interaction);
+
+    expect(interaction.deferReply).toHaveBeenCalled();
+    expect(editReply).toHaveBeenCalledWith(
+      expect.objectContaining({ content: "Something went wrong." }),
+    );
+  });
 });
 
 describe("InteractionRouter components", () => {
