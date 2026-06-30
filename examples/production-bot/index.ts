@@ -11,7 +11,7 @@ import {
   LoggerBuilder,
   MiddlewareBuilder,
   IntentBuilder,
-} from "@svacmai/discord-bot-builder";
+} from "@dookdiks/discord-bot-builder";
 
 const config = ConfigBuilder.fromEnv().build();
 

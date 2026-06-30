@@ -14,7 +14,7 @@ BOT_OWNER_IDS=123456789,987654321
 ```
 
 ```ts
-import { loadConfigFromEnv } from "@svacmai/discord-bot-builder";
+import { loadConfigFromEnv } from "@dookdiks/discord-bot-builder";
 
 const config = loadConfigFromEnv();
 const bot = await new BotBuilder().configure(config).build();
@@ -35,7 +35,7 @@ Deploy commands in CI before starting the bot process:
 
 ```ts
 // scripts/deploy-commands.ts
-import { BotBuilder, CommandBuilder } from "@svacmai/discord-bot-builder";
+import { BotBuilder, CommandBuilder } from "@dookdiks/discord-bot-builder";
 
 const ping = new CommandBuilder("ping", "Pong").execute(async () => {});
 const bot = await new BotBuilder()
@@ -104,7 +104,7 @@ createServer((req, res) => {
 ## Logging
 
 ```ts
-import { Logger } from "@svacmai/discord-bot-builder";
+import { Logger } from "@dookdiks/discord-bot-builder";
 
 const logger = new Logger({ level: "info", prefix: "my-bot" });
 builder.loggerInstance(logger);

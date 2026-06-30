@@ -3,7 +3,7 @@ import {
   CommandBuilder,
   DatabaseBuilder,
   MiddlewareBuilder,
-} from "@svacmai/discord-bot-builder";
+} from "@dookdiks/discord-bot-builder";
 
 const ping = new CommandBuilder("ping", "Check if the bot is alive")
   .cooldown(3)

@@ -2,7 +2,7 @@ import {
   BotBuilder,
   CommandBuilder,
   MemoryAdapter,
-} from "@svacmai/discord-bot-builder";
+} from "@dookdiks/discord-bot-builder";
 
 interface UserProfile {
   points: number;

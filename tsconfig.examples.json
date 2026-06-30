@@ -4,7 +4,7 @@
     "rootDir": ".",
     "noEmit": true,
     "paths": {
-      "@svacmai/discord-bot-builder": ["./src/index.ts"]
+      "@dookdiks/discord-bot-builder": ["./src/index.ts"]
     }
   },
   "include": ["examples/**/*.ts"],

@@ -12,7 +12,7 @@ import {
   errorHandlerMiddleware,
   ownerOnlyMiddleware,
   deferMiddleware,
-} from "@svacmai/discord-bot-builder";
+} from "@dookdiks/discord-bot-builder";
 
 builder
   .use(loggerMiddleware())           // Log every command
@@ -24,7 +24,7 @@ builder
 ### Custom middleware
 
 ```ts
-import type { MiddlewareFn } from "@svacmai/discord-bot-builder";
+import type { MiddlewareFn } from "@dookdiks/discord-bot-builder";
 
 const maintenanceMode: MiddlewareFn = async (ctx, next) => {
   const isMaintenance = ctx.services.db.get<boolean>("maintenance");
@@ -64,7 +64,7 @@ Global middleware (builder.use)
 Plugins bundle commands, events, and lifecycle logic.
 
 ```ts
-import type { BotPlugin } from "@svacmai/discord-bot-builder";
+import type { BotPlugin } from "@dookdiks/discord-bot-builder";
 
 const statsPlugin: BotPlugin = {
   name: "stats",
@@ -111,7 +111,7 @@ builder.plugin(statsPlugin);
 ## Events
 
 ```ts
-import { EventBuilder } from "@svacmai/discord-bot-builder";
+import { EventBuilder } from "@dookdiks/discord-bot-builder";
 
 builder
   .event(new EventBuilder("guildMemberAdd").execute(async (ctx) => {
@@ -136,7 +136,7 @@ new EventBuilder("clientReady").once().execute(async () => {});
 ## Intents
 
 ```ts
-import { IntentBuilder } from "@svacmai/discord-bot-builder";
+import { IntentBuilder } from "@dookdiks/discord-bot-builder";
 
 builder.intents(
   IntentBuilder.default()

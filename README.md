@@ -7,7 +7,7 @@ Production-ready, type-safe **builder-first** framework for Discord bots on Node
 ## Installation
 
 ```bash
-npm install @svacmai/discord-bot-builder discord.js
+npm install @dookdiks/discord-bot-builder discord.js
 ```
 
 Requires Node.js 18+.
@@ -22,7 +22,7 @@ import {
   DatabaseBuilder,
   LoggerBuilder,
   MiddlewareBuilder,
-} from "@svacmai/discord-bot-builder";
+} from "@dookdiks/discord-bot-builder";
 
 const ping = new CommandBuilder("ping", "Health check")
   .execute(async (ctx) => {
@@ -102,7 +102,7 @@ import {
   IntentBuilder,
   PermissionBuilder,
   CooldownBuilder,
-} from "@svacmai/discord-bot-builder";
+} from "@dookdiks/discord-bot-builder";
 
 const mod = new CommandGroupBuilder("mod", "Moderation")
   .guildOnly()
