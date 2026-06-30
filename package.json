@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Builder-first TypeScript framework for Discord bots — fluent APIs for commands, components, config, database, middleware, and more",
   "type": "module",
   "main": "./dist/index.cjs",
